@@ -1,0 +1,23 @@
+img {
+    /* Para que sea responsiva */
+    margin-top: 15px;
+    border-radius: 15px;
+    width: 100%;
+  }
+  * {
+    /*box-sizing: border-box;*/
+  }
+  
+  .columna {
+    float: left;
+    width: 50%;
+    /*padding-right: 5px;*/
+    position: absolute;
+  }
+  .table{
+    margin-top: 15px;
+    padding-left: 45rem;
+  }
+#classify_button{
+  margin-left: 24px;
+}

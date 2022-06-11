@@ -1,30 +1,89 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Getting Started with ml5.js</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+    </script>
+    <script src="index.js"></script>
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="css/css/bootstrap.min.css">
 
-<head>
-  <meta charset="UTF-8">
-  <title>Image classification using MobileNet and p5.js</title>
+  </head>
+
+  <body>
+    <div class="row">
+        
+          <div class="container-fluid">
+            <div class="row flex-nowrap">
+              
+                <div class="col-auto col-md-4 col-xl-3 px-sm-3 px-0 bg-dark">
+                    <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                        <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                            <span class="fs-5 d-none d-sm-inline">Image</span>
+                            <span class="fs-5 d-none d-sm-inline">  Recognition</span>
+
+                        </a>
+            
+                        <div class="input-group mb-3">
+                          <label class="input-group-text" for="inputGroupSelect01">Models</label>
+                          <select class="form-select" id="model" onchange="get_model()">
+                            <option value="0" selected>Select a model</option>
+                            <option value="MobileNet">MobileNet</option>
+                            <option value="DoodleNet">DoodleNet</option>
+                          </select>
+                        </div>
+                        <div >
+                          <button class="btn btn-outline-warning" type="button" id="reload_button" onclick="reload_image()">Change Image</button>
+                          <button class="btn btn-outline-primary" type="button" id="classify_button" onclick="predict()">Classify Actual</button>
+                
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+
+                <div class=" col-md-4 fila " id="predict">
+                  <div class="columna">
+                    <img id="image" crossorigin="anonymous" src="https://picsum.photos/800/600/">
+                  </div>
+                  
+                  <div class="table">          
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Label</th>
+                          <th>Confidence</th>
+                          
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td id="label">****</td>
+                          <td id="confidence">****</td>
+                         
+                        </tr>
+                        
+                      </tbody>
+                    </table>
+                  </div>
+                    
+                  
+                </div>
+                
+                
+              
+            </div>
+        </div>
+
+
+     
+    </div>
+    
+    
+  </body>
+ 
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.min.js"></script>
-  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
-</head>
-
-<body>
-  <h1>Image classification using MobileNet and p5.js</h1>
-  <img crossorigin="anonymous" src="data:image/jpeg;base64,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" id="image" />
-  
-</body>
-<script>
-       const classifier = ml5.imageClassifier('MobileNet', modelLoaded);
-        function modelLoaded() {
-        console.log('Model Loaded!');
-        }
-        classifier.classify(document.getElementById('image'), (err, results) => {
-        console.log('Classify: '+results[0].label);
-        console.log('Confidence: '+results[0].confidence);
-        alert('Classify '+results[0].label+'\n'+'Confidence '+results[0].confidence*100+' %')
-        });
-
-
-</script>
-
 </html>
